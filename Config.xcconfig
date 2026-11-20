@@ -1,0 +1,4 @@
+// Signing settings shared by the app and its keyboard extension.
+// To run on your own iPhone, set your Apple developer team ID and a bundle ID prefix you own.
+DEVELOPMENT_TEAM =
+BUNDLE_ID_PREFIX = dev.plotarmor
