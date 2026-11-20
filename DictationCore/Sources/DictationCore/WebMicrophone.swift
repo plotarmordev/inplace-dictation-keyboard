@@ -18,6 +18,13 @@ public final class WebMicrophone {
     public init() {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
+        #if targetEnvironment(simulator)
+        // In the simulator WebKit gives pages a synthetic test tone instead of the Mac's
+        // microphone unless its mock capture devices are switched off.
+        if configuration.preferences.responds(to: NSSelectorFromString("_setMockCaptureDevicesEnabled:")) {
+            configuration.preferences.setValue(false, forKey: "mockCaptureDevicesEnabled")
+        }
+        #endif
         // The page starts its AudioContext from script, without a touch.
         configuration.mediaTypesRequiringUserActionForPlayback = []
         // Serving the page from a custom scheme makes it a secure context, which

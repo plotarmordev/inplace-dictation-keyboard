@@ -34,7 +34,13 @@ public final class SpeechTranscriber {
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         request.addsPunctuation = true
+        #if targetEnvironment(simulator)
+        // The simulator reports on-device support but ships no speech model, so recognition
+        // there only works over the network.
+        request.requiresOnDeviceRecognition = false
+        #else
         request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
+        #endif
         self.request = request
         self.sampleRate = sampleRate
         // The recogniser calls back on the main queue.
