@@ -62,3 +62,7 @@ Dictation also works in the iOS Simulator, which listens through the Mac's defau
 Simulator builds switch off WebKit's mock capture devices (otherwise the page hears a test tone)
 and recognise speech over the network, because the Simulator has no on-device speech model. Both
 are compiled out of device builds.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
