@@ -3,8 +3,8 @@ import SwiftUI
 /// The whole keyboard: one row. At rest it offers the dictation button and the keys worth
 /// keeping next to it; during a dictation it becomes cancel, a live waveform, and done.
 struct KeyboardBar: View {
-    /// Height of the row; the keyboard is exactly this tall.
-    static let height: CGFloat = 48
+    /// Height of the row; the keyboard is exactly this tall: 40 pt keys with 6 pt above and below.
+    static let height: CGFloat = 52
 
     let dictation: Dictation
     let showsGlobe: Bool
@@ -20,8 +20,10 @@ struct KeyboardBar: View {
             }
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 3)
+        // Every control is a capsule, so with these margins the end ones sit concentric in the
+        // rounded corners of the system's keyboard backdrop instead of being clipped by them.
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
         .frame(height: Self.height)
         .animation(.snappy(duration: 0.2), value: dictation.phase)
     }
@@ -52,13 +54,7 @@ struct KeyboardBar: View {
 
     @ViewBuilder private var dictating: some View {
         let finishing = dictation.phase == .finishing
-        Button(action: dictation.cancel) {
-            Image(systemName: "xmark")
-                .font(.body.weight(.semibold))
-                .frame(width: 42, height: 42)
-                .background(.fill.tertiary, in: .circle)
-        }
-        .accessibilityLabel("Cancel dictation")
+        Key(symbol: "xmark", label: "Cancel dictation", action: dictation.cancel)
         Waveform(levels: dictation.levels)
             .opacity(finishing ? 0.4 : 1)
             .accessibilityLabel(finishing ? "Finishing" : "Listening")
@@ -70,9 +66,10 @@ struct KeyboardBar: View {
                     Image(systemName: "checkmark").font(.body.weight(.bold))
                 }
             }
-            .frame(width: 42, height: 42)
+            .frame(width: Key.width)
+            .frame(maxHeight: .infinity)
             .foregroundStyle(.white)
-            .background(Color.accentColor, in: .circle)
+            .background(Color.accentColor, in: .capsule)
         }
         .disabled(finishing)
         .accessibilityLabel("Finish dictation")
@@ -110,10 +107,13 @@ private struct Waveform: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 6)
+        .padding(.vertical, 2)
     }
 }
 
 private struct Key: View {
+    static let width: CGFloat = 46
+
     let symbol: String
     let label: String
     let action: () -> Void
@@ -122,9 +122,9 @@ private struct Key: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.body.weight(.medium))
-                .frame(width: 44)
+                .frame(width: Self.width)
                 .frame(maxHeight: .infinity)
-                .background(.fill.tertiary, in: .rect(cornerRadius: 9))
+                .background(.fill.tertiary, in: .capsule)
         }
         .accessibilityLabel(label)
     }

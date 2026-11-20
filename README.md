@@ -3,7 +3,7 @@
 An iOS keyboard that dictates in place: tap the microphone, talk, and the words appear in the
 text field you are in. No switching to another app and back.
 
-The keyboard is a single 48-point row, so it leaves almost the whole screen to the app you are
+The keyboard is a single 52-point row (40-point keys with 6 points above and below), so it leaves almost the whole screen to the app you are
 typing in.
 
 ## Try it on your iPhone
