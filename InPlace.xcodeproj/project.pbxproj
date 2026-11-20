@@ -44,13 +44,13 @@
 		152F5D7CED689E2A7B54E8F1 /* KeyboardBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardBar.swift; sourceTree = "<group>"; };
 		3A16C11A6BA8B4DF4CBEDE5D /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		5C002122E56EC6BAEF17D309 /* InPlaceKeyboard.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = InPlaceKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		720CB687825C7C4963618511 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		AE39F1F34111B2231CAA4DC1 /* DictationCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DictationCore; path = DictationCore; sourceTree = SOURCE_ROOT; };
 		D1DA81EA92E90E8DD2981653 /* InPlaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InPlaceApp.swift; sourceTree = "<group>"; };
 		D2ACAFEDE53C57D2285D2E98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E7338B181B8F13DE40BB84B8 /* Dictation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictation.swift; sourceTree = "<group>"; };
 		F3C5956C816C94087EB7A071 /* InPlace.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = InPlace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFE77FFD167465C711408E2C /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
-		"TEMP_7BA30B2C-365E-48F3-89CF-B43DD1CF3D34" /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +96,7 @@
 		45A72383DFB8CB0A60CFA7E3 = {
 			isa = PBXGroup;
 			children = (
+				720CB687825C7C4963618511 /* Config.xcconfig */,
 				F65C46B64FD919A42583CE43 /* App */,
 				0B0CE1D78940400940D3F567 /* Keyboard */,
 				2165908545CAF68479CE3761 /* Packages */,
@@ -112,10 +113,10 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		"TEMP_81071F3E-3727-4E49-BE99-DA506E0FF1FA" /* inplace-dictation-keyboard */ = {
+		"TEMP_96942762-5358-4558-813A-1CA842DBD83F" /* inplace-dictation-keyboard */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_7BA30B2C-365E-48F3-89CF-B43DD1CF3D34" /* Config.xcconfig */,
+				720CB687825C7C4963618511 /* Config.xcconfig */,
 			);
 			path = "inplace-dictation-keyboard";
 			sourceTree = "<group>";
@@ -238,6 +239,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -251,7 +253,7 @@
 		};
 		7021DB6993066EDDC45B5104 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_7BA30B2C-365E-48F3-89CF-B43DD1CF3D34" /* Config.xcconfig */;
+			baseConfigurationReference = 720CB687825C7C4963618511 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -352,7 +354,7 @@
 		};
 		CD95045224E6221BD3B0B546 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_7BA30B2C-365E-48F3-89CF-B43DD1CF3D34" /* Config.xcconfig */;
+			baseConfigurationReference = 720CB687825C7C4963618511 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -420,6 +422,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
