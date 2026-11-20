@@ -3,8 +3,23 @@ import SwiftUI
 /// The whole keyboard: one row. At rest it offers the dictation button and the keys worth
 /// keeping next to it; during a dictation it becomes cancel, a live waveform, and done.
 struct KeyboardBar: View {
-    /// Height of the row; the keyboard is exactly this tall: 40 pt keys with 6 pt above and below.
-    static let height: CGFloat = 52
+    static let keyHeight: CGFloat = 40
+
+    /// Space above and below the keys. On iPhones without a Home button the system draws its
+    /// own globe and dictation icons about 21 pt under the keyboard, so the keys need nothing
+    /// below. Above, the system adds nothing when the keyboard opens and 17 pt when it is
+    /// switched to from the system keyboard; 14 pt of our own keeps both cases close to that
+    /// 21 pt. Elsewhere the keyboard ends at the screen edge and has the globe in its row:
+    /// 6 pt each side.
+    static func margins(showsGlobe: Bool) -> (top: CGFloat, bottom: CGFloat) {
+        showsGlobe ? (6, 6) : (14, 0)
+    }
+
+    /// The keyboard is exactly as tall as its one row.
+    static func height(showsGlobe: Bool) -> CGFloat {
+        let margins = margins(showsGlobe: showsGlobe)
+        return margins.top + keyHeight + margins.bottom
+    }
 
     let dictation: Dictation
     let showsGlobe: Bool
@@ -13,6 +28,7 @@ struct KeyboardBar: View {
     let onReturn: () -> Void
 
     var body: some View {
+        let margins = Self.margins(showsGlobe: showsGlobe)
         HStack(spacing: 6) {
             switch dictation.phase {
             case .preparing, .idle: resting
@@ -23,8 +39,9 @@ struct KeyboardBar: View {
         // Every control is a capsule, so with these margins the end ones sit concentric in the
         // rounded corners of the system's keyboard backdrop instead of being clipped by them.
         .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .frame(height: Self.height)
+        .frame(height: Self.keyHeight)
+        .padding(.top, margins.top)
+        .padding(.bottom, margins.bottom)
         .animation(.snappy(duration: 0.2), value: dictation.phase)
     }
 

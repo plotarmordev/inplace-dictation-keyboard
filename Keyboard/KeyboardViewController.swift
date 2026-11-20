@@ -19,9 +19,10 @@ final class KeyboardViewController: UIInputViewController {
         webView.accessibilityElementsHidden = true
         view.addSubview(webView)
 
+        let showsGlobe = needsInputModeSwitchKey
         let bar = UIHostingController(rootView: KeyboardBar(
             dictation: dictation,
-            showsGlobe: needsInputModeSwitchKey,
+            showsGlobe: showsGlobe,
             onGlobe: { [unowned self] in advanceToNextInputMode() },
             onDelete: { [unowned self] in textDocumentProxy.deleteBackward() },
             onReturn: { [unowned self] in textDocumentProxy.insertText("\n") }
@@ -32,7 +33,9 @@ final class KeyboardViewController: UIInputViewController {
         view.addSubview(bar.view)
         bar.didMove(toParent: self)
 
-        let height = view.heightAnchor.constraint(equalToConstant: KeyboardBar.height)
+        let height = view.heightAnchor.constraint(
+            equalToConstant: KeyboardBar.height(showsGlobe: showsGlobe)
+        )
         height.priority = .defaultHigh
         NSLayoutConstraint.activate([
             height,
