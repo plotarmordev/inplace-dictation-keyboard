@@ -53,7 +53,9 @@ async function open() {
         .postMessage({ pcm: toBase64(data.pcm), level: data.peak })
         .then(() => (mine.lastAck = performance.now()), () => endIfCurrent('bridge-lost'));
     };
-    context.createMediaStreamSource(stream).connect(tap).connect(context.destination);
+    // Connect through a zero-gain node so the worklet stays pulled without making the mic audible.
+    const mute = new GainNode(context, { gain: 0 });
+    context.createMediaStreamSource(stream).connect(tap).connect(mute).connect(context.destination);
     context.onstatechange = () => context.state === 'running' || endIfCurrent(`context-${context.state}`);
 
     mine.lastAck = performance.now();
