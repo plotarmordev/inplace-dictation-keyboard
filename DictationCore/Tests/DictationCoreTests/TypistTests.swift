@@ -6,12 +6,16 @@ import Testing
 private final class Field: TextTarget {
     let fieldID = UUID()
     var text: String
+    var nilWhenEmpty: Bool
     var deletions = 0
     var insertions: [String] = []
 
-    init(_ text: String = "") { self.text = text }
+    init(_ text: String = "", nilWhenEmpty: Bool = false) {
+        self.text = text
+        self.nilWhenEmpty = nilWhenEmpty
+    }
 
-    var textBeforeCursor: String? { text }
+    var textBeforeCursor: String? { text.isEmpty && nilWhenEmpty ? nil : text }
     func insert(_ inserted: String) { text += inserted; insertions.append(inserted) }
     func deleteBackward() { text.removeLast(); deletions += 1 }
 }
@@ -78,7 +82,7 @@ private final class Field: TextTarget {
         #expect(field.text == "Note: ")
     }
 
-    @Test(arguments: [("", "Hi"), ("Dear ", "Dear Hi"), ("Dear", "Dear Hi"), ("Line\n", "Line\nHi")])
+    @Test(arguments: [("", "Hi"), ("Dear ", "Dear hi"), ("Dear", "Dear hi"), ("Line\n", "Line\nHi")])
     func separatesFromThePrecedingWord(existing: String, expected: String) {
         let field = Field(existing)
         var typist = Typist()
@@ -108,5 +112,97 @@ private final class Field: TextTarget {
         typist.update(to: "Two.", in: field)
 
         #expect(field.text == "One. Two.")
+    }
+
+    @Test(arguments: [
+        ("I went to ", "The store", "I went to the store"),
+        ("I went to", "The store", "I went to the store"),
+        ("Well, ", "Actually no", "Well, actually no"),
+        ("Note: ", "A cat", "Note: a cat"),
+        ("Look at ", "Éclair", "Look at éclair"),
+    ])
+    func lowercasesFirstLetterMidSentence(existing: String, transcript: String, expected: String) {
+        let field = Field(existing)
+        var typist = Typist()
+        typist.begin(in: field)
+        typist.update(to: transcript, in: field)
+
+        #expect(field.text == expected)
+    }
+
+    @Test(arguments: [
+        "I",
+        "I think so",
+        "I'm going",
+        "I’m going",
+        "I've seen it",
+        "Alice went home",
+        "Paris",
+        "Google",
+        "New York",
+        "NASA",
+        "NASA launched",
+        "OK then",
+        "TV show",
+    ])
+    func keepsCapitalMidSentenceForSpecialWords(transcript: String) {
+        let field = Field("Wait, ")
+        var typist = Typist()
+        typist.begin(in: field)
+        typist.update(to: transcript, in: field)
+
+        #expect(field.text == "Wait, " + transcript)
+    }
+
+    @Test(arguments: [
+        ("", false, "Hello"),
+        ("", true, "Hello"),
+        ("   ", false, "   Hello"),
+        ("Done.", false, "Done. Hello"),
+        ("Done. ", false, "Done. Hello"),
+        ("Really?", false, "Really? Hello"),
+        ("Really? ", false, "Really? Hello"),
+        ("Wow!", false, "Wow! Hello"),
+        ("Wow! ", false, "Wow! Hello"),
+        ("Line\n", false, "Line\nHello"),
+        ("Line\n  ", false, "Line\n  Hello"),
+    ])
+    func keepsRecognisedCasingAtSentenceStart(existing: String, nilWhenEmpty: Bool, expected: String) {
+        let field = Field(existing, nilWhenEmpty: nilWhenEmpty)
+        var typist = Typist()
+        typist.begin(in: field)
+        typist.update(to: "Hello", in: field)
+
+        #expect(field.text == expected)
+    }
+
+    @Test func retypesOnlyTheChangedPartMidSentence() {
+        let field = Field("I want to ")
+        var typist = Typist()
+        typist.begin(in: field)
+        typist.update(to: "Go", in: field)
+        typist.update(to: "Go home", in: field)
+
+        #expect(field.text == "I want to go home")
+        #expect(field.insertions == ["go", " home"])
+        #expect(field.deletions == 0)
+
+        typist.update(to: "Go back", in: field)
+        #expect(field.text == "I want to go back")
+        #expect(field.deletions == "home".count)
+        #expect(field.insertions.last == "back")
+    }
+
+    @Test func updatesCasingWhenPartialRevisionChangesFirstWord() {
+        let field = Field("Visit ")
+        var typist = Typist()
+        typist.begin(in: field)
+        typist.update(to: "New", in: field)
+        #expect(field.text == "Visit new")
+
+        typist.update(to: "New York", in: field)
+        #expect(field.text == "Visit New York")
+        #expect(field.deletions == "new".count)
+        #expect(field.insertions.last == "New York")
     }
 }
