@@ -22,16 +22,34 @@ final class Dictation {
     /// Why dictation could not start or stopped early.
     private(set) var problem: String?
 
+    /// The languages the language key cycles through.
+    let languages = SpeechTranscriber.languages
+    /// The language the next dictation is recognised in.
+    private(set) var language: Locale
+
     let microphone = WebMicrophone()
-    private let transcriber = SpeechTranscriber()
+    private var transcriber: SpeechTranscriber?
     private var typist = Typist()
     private let target: () -> TextTarget
     private let hasFullAccess: () -> Bool
 
+    private static let languageKey = "dictationLanguage"
+
     init(target: @escaping () -> TextTarget, hasFullAccess: @escaping () -> Bool) {
         self.target = target
         self.hasFullAccess = hasFullAccess
+        let saved = UserDefaults.standard.string(forKey: Self.languageKey)
+        language = SpeechTranscriber.language(saved: saved, among: languages) ?? .current
+        transcriber = SpeechTranscriber(locale: language)
         microphone.onEvent = { [unowned self] in handle($0) }
+    }
+
+    /// Moves to the next of `languages` and remembers it for later keyboard launches.
+    func nextLanguage() {
+        guard let index = languages.firstIndex(of: language) else { return }
+        language = languages[(index + 1) % languages.count]
+        transcriber = SpeechTranscriber(locale: language)
+        UserDefaults.standard.set(language.identifier, forKey: Self.languageKey)
     }
 
     func toggle() {
