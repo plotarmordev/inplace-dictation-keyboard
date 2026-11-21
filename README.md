@@ -25,6 +25,11 @@ it has 6 points above and below.
 While it listens, the row shows a live waveform between a cancel button (removes what this
 dictation typed) and a done button (keeps it).
 
+If two or more of your preferred languages (Settings > General > Language & Region) have a
+speech recogniser, a language key such as `EN` or `FR` appears beside the dictation button. Tap
+it to move to the next language; the following dictation is recognised in that one, and the
+keyboard remembers the choice. With a single such language the key is not shown.
+
 ## How it works
 
 iOS doesn't let a keyboard extension record through the usual audio APIs, but a web view inside

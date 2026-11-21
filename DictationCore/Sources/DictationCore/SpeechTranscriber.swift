@@ -18,8 +18,43 @@ public final class SpeechTranscriber {
     private var task: SFSpeechRecognitionTask?
     private var sampleRate = 0.0
 
+    /// The languages the user can dictate in: those of `Locale.preferredLanguages` that have a
+    /// recogniser, most preferred first.
+    public static var languages: [Locale] {
+        languages(preferred: Locale.preferredLanguages, supported: SFSpeechRecognizer.supportedLocales())
+    }
+
+    /// One recogniser per language, so that a two-letter code is enough to tell them apart.
+    static func languages(preferred: [String], supported: Set<Locale>) -> [Locale] {
+        let supported = Set(supported.map { $0.identifier(.bcp47) })
+        var listed = Set<Locale.LanguageCode>()
+        return preferred.compactMap { identifier in
+            let language = Locale.Language(identifier: identifier)
+            guard let code = language.languageCode, !listed.contains(code) else { return nil }
+            // iOS adds the device's region to every preferred language ("fr-US"). Where that
+            // pair has no recogniser, the region the language is most spoken in stands in,
+            // then any region that has one.
+            let home = Locale.Language(
+                identifier: Locale.Language(languageCode: code, script: language.script).maximalIdentifier
+            )
+            guard let match = [language.region, home.region]
+                .compactMap({ region in region.map { "\(code.identifier)-\($0.identifier)" } })
+                .first(where: supported.contains)
+                ?? supported.filter({ $0.hasPrefix("\(code.identifier)-") }).min()
+            else { return nil }
+            listed.insert(code)
+            return Locale(identifier: match)
+        }
+    }
+
+    /// The language to dictate in: the `saved` one while it is still among `languages`,
+    /// otherwise the most preferred.
+    public static func language(saved: String?, among languages: [Locale]) -> Locale? {
+        languages.first { $0.identifier == saved } ?? languages.first
+    }
+
     /// Fails when neither `locale` nor US English is supported.
-    public init?(locale: Locale = .current) {
+    public init?(locale: Locale) {
         guard let recognizer = SFSpeechRecognizer(locale: locale) ?? SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
         else { return nil }
         self.recognizer = recognizer
