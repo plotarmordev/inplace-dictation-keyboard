@@ -4,6 +4,7 @@ import SwiftUI
 /// keeping next to it; during a dictation it becomes cancel, a live waveform, and done.
 struct KeyboardBar: View {
     static let keyHeight: CGFloat = 40
+    static let keyWidth: CGFloat = 46
 
     /// Space above and below the keys. On iPhones without a Home button the system draws its
     /// own globe and dictation icons about 21 pt under the keyboard, so the keys need nothing
@@ -49,11 +50,26 @@ struct KeyboardBar: View {
         if showsGlobe {
             Key(symbol: "globe", label: "Next keyboard", action: onGlobe)
         }
+        if dictation.languages.count > 1 {
+            let language = dictation.language
+            let name = Locale.current.localizedString(forIdentifier: language.identifier) ?? language.identifier
+            Key(
+                face: Text(language.language.languageCode?.identifier.uppercased() ?? ""),
+                label: "Dictation language: \(name)",
+                action: dictation.nextLanguage
+            )
+        }
         Button(action: dictation.toggle) {
-            Label(
+            let label = Label(
                 dictation.problem ?? (dictation.phase == .idle ? "Tap to dictate" : "Preparing…"),
                 systemImage: dictation.problem == nil ? "mic.fill" : "exclamationmark.triangle.fill"
             )
+            // Under 100 pt even the shrunken title is cut short, so the icon stands alone. That
+            // only happens on a 320 pt screen showing both the globe and the language key.
+            ViewThatFits(in: .horizontal) {
+                label.frame(idealWidth: 100)
+                label.labelStyle(.iconOnly)
+            }
             .font(.callout.weight(.medium))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
@@ -83,7 +99,7 @@ struct KeyboardBar: View {
                     Image(systemName: "checkmark").font(.body.weight(.bold))
                 }
             }
-            .frame(width: Key.width)
+            .frame(width: Self.keyWidth)
             .frame(maxHeight: .infinity)
             .foregroundStyle(.white)
             .background(Color.accentColor, in: .capsule)
@@ -128,21 +144,25 @@ private struct Waveform: View {
     }
 }
 
-private struct Key: View {
-    static let width: CGFloat = 46
-
-    let symbol: String
+private struct Key<Face: View>: View {
+    let face: Face
     let label: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: symbol)
+            face
                 .font(.body.weight(.medium))
-                .frame(width: Self.width)
+                .frame(width: KeyboardBar.keyWidth)
                 .frame(maxHeight: .infinity)
                 .background(.fill.tertiary, in: .capsule)
         }
         .accessibilityLabel(label)
+    }
+}
+
+private extension Key<Image> {
+    init(symbol: String, label: String, action: @escaping () -> Void) {
+        self.init(face: Image(systemName: symbol), label: label, action: action)
     }
 }
